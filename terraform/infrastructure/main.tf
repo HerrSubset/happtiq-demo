@@ -50,3 +50,17 @@ resource "google_project_iam_member" "demo-app-sac-workloadidentityuser" {
   member  = "serviceAccount:${google_service_account.demo-app-sac.email}"
 }
 
+resource "google_dns_managed_zone" "pjsmets-happtiq-zone" {
+  name     = "happtiq-pjsmets-com"
+  dns_name = "happtiq.pjsmets.com."
+}
+
+resource "google_dns_record_set" "app-domain-name" {
+  name = "demo-app.happtiq.pjsmets.com."
+  type = "A"
+  ttl  = "30"
+
+  managed_zone = google_dns_managed_zone.pjsmets-happtiq-zone.name
+
+  rrdatas = [google_compute_global_address.demo-app-public-ip.address]
+}
