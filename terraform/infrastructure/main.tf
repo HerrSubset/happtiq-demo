@@ -1,3 +1,10 @@
+terraform {
+  backend "gcs" {
+   bucket = "pj-happtiq-tf-states" 
+   prefix = "infrastructure"
+  }
+}
+
 provider "google" {
     project = "happtiq-pjsmets-demo-play"
     region = "europe-west3"
