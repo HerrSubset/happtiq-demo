@@ -7,6 +7,10 @@ data "google_container_cluster" "demo-gke-cluster" {
   name     = "demo-gke-cluster"
 }
 
+data "google_compute_global_address" "demo-app-public-ip" {
+  name         = "demo-app-external-ip"
+}
+
 data "google_client_config" "google-client" {
 }
 
@@ -99,6 +103,9 @@ resource "kubernetes_ingress_v1" "demo-app-ingress" {
     metadata {
       name = "demo-deployment-ingress"
       namespace = kubernetes_namespace.demo-namespace.metadata.0.name
+      annotations = {
+        "kubernetes.io/ingress.global-static-ip-name" = data.google_compute_global_address.demo-app-public-ip.name
+      }
     }
 
     spec {

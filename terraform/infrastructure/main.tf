@@ -9,3 +9,9 @@ resource "google_container_cluster" "demo-gke-cluster" {
   deletion_protection = false # Needed to easily destroy with Terraform
 }
 
+resource "google_compute_global_address" "demo-app-public-ip" {
+  project      = "happtiq-pjsmets-demo-play"
+  name         = "demo-app-external-ip"
+  address_type = "EXTERNAL"
+  ip_version   = "IPV4"
+}
