@@ -22,3 +22,12 @@ resource "google_compute_global_address" "demo-app-public-ip" {
   address_type = "EXTERNAL"
   ip_version   = "IPV4"
 }
+
+resource "google_storage_bucket" "demo-app-image-bucket" {
+ name = "demo-app-image-bucket"
+ location = "europe-west3"
+ force_destroy = true # So we can delete the bucket plus contents with TF for easier recreation of the infra
+
+ uniform_bucket_level_access = true
+ public_access_prevention = "enforced"
+}
