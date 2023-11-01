@@ -19,17 +19,19 @@ provider "kubernetes" {
 }
 
 
-
-# TODO: create resources in a separate namespace
+resource "kubernetes_namespace" "demo-namespace" {
+   metadata {
+     name = "happtiq-demo" 
+   }
+}
 
 resource "kubernetes_deployment" "demo-deployment" {
-    # TODO: split this up into a separate deployment or make this dependent on
-    #       the GKE cluster.
     metadata {
       name = "demo-deployment"
       labels = {
           app = "happtiq-demo-app"
       }
+      namespace = kubernetes_namespace.demo-namespace.metadata.0.name
     }
 
     spec {
@@ -79,6 +81,7 @@ resource "kubernetes_deployment" "demo-deployment" {
 resource "kubernetes_service" "demo-app-service" {
     metadata {
       name = "demo-deployment-service"
+      namespace = kubernetes_namespace.demo-namespace.metadata.0.name
     }
     spec {
       selector = {
@@ -95,6 +98,7 @@ resource "kubernetes_service" "demo-app-service" {
 resource "kubernetes_ingress_v1" "demo-app-ingress" {
     metadata {
       name = "demo-deployment-ingress"
+      namespace = kubernetes_namespace.demo-namespace.metadata.0.name
     }
 
     spec {
