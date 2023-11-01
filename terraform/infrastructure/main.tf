@@ -31,3 +31,16 @@ resource "google_storage_bucket" "demo-app-image-bucket" {
   uniform_bucket_level_access = true
   public_access_prevention    = "enforced"
 }
+
+resource "google_service_account" "demo-app-sac" {
+  account_id   = "demo-app-sac"
+  display_name = "Demo App SAC"
+  description  = "Service account for the Happtiq Demo app running on GKE"
+}
+
+resource "google_project_iam_member" "demo-app-sac-objectviewer" {
+  project = "happtiq-pjsmets-demo-play"
+  role    = "roles/storage.objectViewer"
+  member  = "serviceAccount:${google_service_account.demo-app-sac.email}"
+}
+
