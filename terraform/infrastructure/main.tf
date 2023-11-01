@@ -50,9 +50,11 @@ resource "google_project_iam_member" "demo-app-sac-workloadidentityuser" {
   member  = "serviceAccount:${google_service_account.demo-app-sac.email}"
 }
 
-resource "google_dns_managed_zone" "pjsmets-happtiq-zone" {
-  name     = "happtiq-pjsmets-com"
-  dns_name = "happtiq.pjsmets.com."
+data "google_dns_managed_zone" "pjsmets-happtiq-zone" {
+  # I created this resource manually. When it gets recreated by TF, Google
+  # often uses diferent name servers, which means I'd have to update the NS
+  # record at my registrar.
+  name = "happtiq-pjsmets-com"
 }
 
 resource "google_dns_record_set" "app-domain-name" {
@@ -60,7 +62,7 @@ resource "google_dns_record_set" "app-domain-name" {
   type = "A"
   ttl  = "30"
 
-  managed_zone = google_dns_managed_zone.pjsmets-happtiq-zone.name
+  managed_zone = data.google_dns_managed_zone.pjsmets-happtiq-zone.name
 
   rrdatas = [google_compute_global_address.demo-app-public-ip.address]
 }
