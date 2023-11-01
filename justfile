@@ -21,3 +21,6 @@ destroy:
     cd terraform/kubernetes_config && terraform destroy -auto-approve
     cd terraform/infrastructure && terraform destroy -auto-approve
 
+fmt:
+    cd terraform/kubernetes_config && terraform fmt
+    cd terraform/infrastructure && terraform fmt
