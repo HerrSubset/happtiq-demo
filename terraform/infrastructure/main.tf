@@ -44,3 +44,9 @@ resource "google_project_iam_member" "demo-app-sac-objectviewer" {
   member  = "serviceAccount:${google_service_account.demo-app-sac.email}"
 }
 
+resource "google_project_iam_member" "demo-app-sac-workloadidentityuser" {
+  project = "happtiq-pjsmets-demo-play"
+  role    = "roles/iam.workloadIdentityUser"
+  member  = "serviceAccount:${google_service_account.demo-app-sac.email}"
+}
+

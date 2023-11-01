@@ -36,6 +36,20 @@ resource "kubernetes_namespace" "demo-namespace" {
   }
 }
 
+data "google_service_account" "demo-app-sac" {
+  account_id = "demo-app-sac"
+}
+
+resource "kubernetes_service_account" "demo-app-sac" {
+  metadata {
+    name      = "demo-app-sac"
+    namespace = kubernetes_namespace.demo-namespace.metadata.0.name
+    annotations = {
+      "iam.gke.io/gcp-service-account" = data.google_service_account.demo-app-sac.email
+    }
+  }
+}
+
 resource "kubernetes_deployment" "demo-deployment" {
   metadata {
     name = "demo-deployment"
@@ -59,6 +73,7 @@ resource "kubernetes_deployment" "demo-deployment" {
         }
       }
       spec {
+        service_account_name = kubernetes_service_account.demo-app-sac.metadata.0.name
         container {
           image = "europe-west3-docker.pkg.dev/happtiq-pjsmets-demo-play/happtiq-demo/happtiq-demo:latest"
           name  = "happtiq-demo-app"
