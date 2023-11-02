@@ -50,12 +50,6 @@ resource "google_project_iam_member" "demo-app-sac-objectviewer" {
   member  = "serviceAccount:${google_service_account.demo-app-sac.email}"
 }
 
-resource "google_project_iam_member" "demo-app-sac-workloadidentityuser" {
-  project = "happtiq-pjsmets-demo-play"
-  role    = "roles/iam.workloadIdentityUser"
-  member  = "serviceAccount:${google_service_account.demo-app-sac.email}"
-}
-
 data "google_dns_managed_zone" "pjsmets-happtiq-zone" {
   # I created this resource manually. When it gets recreated by TF, Google
   # often uses diferent name servers, which means I'd have to update the NS

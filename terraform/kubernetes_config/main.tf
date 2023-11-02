@@ -50,6 +50,15 @@ resource "kubernetes_service_account" "demo-app-sac" {
   }
 }
 
+resource "google_service_account_iam_binding" "workload-identity-user-binding" {
+  service_account_id = data.google_service_account.demo-app-sac.name
+  role               = "roles/iam.workloadIdentityUser"
+
+  members = [
+    "serviceAccount:happtiq-pjsmets-demo-play.svc.id.goog[happtiq-demo/demo-app-sac]"
+  ]
+}
+
 resource "kubernetes_deployment" "demo-deployment" {
   metadata {
     name = "demo-deployment"
@@ -74,9 +83,29 @@ resource "kubernetes_deployment" "demo-deployment" {
       }
       spec {
         service_account_name = kubernetes_service_account.demo-app-sac.metadata.0.name
+        init_container {
+          name  = "download-images"
+          image = "google/cloud-sdk:453.0.0"
+          command = [
+            "gcloud",
+            "storage",
+            "cp",
+            "gs://demo-app-image-bucket/happtiq_logo.png",
+            "/usr/share/nginx/images/happtiq_logo.png",
+          ]
+          volume_mount {
+            name       = "image-dir"
+            mount_path = "/usr/share/nginx/images"
+          }
+        }
         container {
-          image = "europe-west3-docker.pkg.dev/happtiq-pjsmets-demo-play/happtiq-demo/happtiq-demo:latest"
+          image = "europe-west3-docker.pkg.dev/happtiq-pjsmets-demo-play/happtiq-demo/happtiq-demo:image3"
           name  = "happtiq-demo-app"
+
+          volume_mount {
+            name       = "image-dir"
+            mount_path = "/usr/share/nginx/images"
+          }
 
           resources {
             limits = {
@@ -97,6 +126,12 @@ resource "kubernetes_deployment" "demo-deployment" {
           }
           port {
             container_port = 80
+          }
+        }
+        volume {
+          name = "image-dir"
+          empty_dir {
+
           }
         }
       }
