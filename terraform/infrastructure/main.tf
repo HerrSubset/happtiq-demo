@@ -32,6 +32,12 @@ resource "google_storage_bucket" "demo-app-image-bucket" {
   public_access_prevention    = "enforced"
 }
 
+resource "google_storage_bucket_object" "happtiq_logo" {
+  name   = "happtiq_logo.png"
+  source = "./happtiq_logo.png"
+  bucket = google_storage_bucket.demo-app-image-bucket.name
+}
+
 resource "google_service_account" "demo-app-sac" {
   account_id   = "demo-app-sac"
   display_name = "Demo App SAC"
